@@ -32,7 +32,9 @@
 		const SHIP_BLINK_DUR = 0.1;//duration ship blink during invuln. sec.
 		const SHIP_INV_DUR = 3;//duration ship invulnerability seconds
 		const SHIP_THRUST = 5;//acceleration pixels/second
-		const TURN_SPEED = 360;//degrees/second
+		const TURN_SPEED = 360;//degrees/seconds
+		const TEXT_FADE_TIME = 2.5;//text fade time in seconds
+		const TEXT_SIZE = 40;//text font height in pixels
 
 		//dev flags
 		const AUTOMATION_ON = true;
@@ -40,8 +42,11 @@
 		const SOUND_ON = true;
 		const MUSIC_ON = true;
 
-		const TEXT_FADE_TIME = 2.5;//text fade time in seconds
-		const TEXT_SIZE = 40;//text font height in pixels
+		//neural network params
+		const NUM_INPUTS = 2;
+		const NUM_HIDDEN = 5;
+		const NUM_OUTPUTS = 1;
+		const NUM_SAMPLES = 10000;
 	
 		/** @type {HTMLCanvasElement} */
 		var canv = document.getElementById("gameCanvas");
@@ -62,28 +67,23 @@
 		newGame();
 		
 		//set up neural net
+		var nn;
 		if (AUTOMATION_ON) {
-			// TODO neural network
+			nn = new NeuralNetwork(NUM_INPUTS, NUM_HIDDEN, NUM_OUTPUTS);
 			
-			let m0 = new Matrix(2, 3, [
-				[2, 1, -1],
-				[4, 3, 0]
-			]);
-			let m1 = new Matrix(2, 3, [
-				[0, 1, -1],
-				[2, -3, 0]
-			]);
-			let m2 = new Matrix(2, 2, [
-				[1, -1],
-				[3, 0]
-			]);
-			//m0.randomWeights();
-			let arr = [4, 5, 6, 7];
-			//console.log(arr);
-			console.table(Matrix.transpose(m1).data);
-			//console.table(m2.data);
-			console.table(m1.data);
-			//console.table(Matrix.dot(m2, m1).data);
+			//train the network
+			for(let i = 0; i < NUM_SAMPLES; i++){
+				let input0 = Math.round(Math.random());
+				let input1 = Math.round(Math.random());
+				let output = input0 == input1 ? 0 : 1;
+				nn.train([input0, input1], [output]);
+			}
+			
+			//test output
+			console.log("0, 0 = " + nn.feedForward([0, 0]).data);
+			console.log("0, 1 = " + nn.feedForward([0, 1]).data);
+			console.log("1, 0 = " + nn.feedForward([1, 0]).data);
+			console.log("1, 1 = " + nn.feedForward([1, 1]).data);
 		}
 		
 		//event handler
