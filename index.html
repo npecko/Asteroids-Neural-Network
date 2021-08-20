@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Asteroids</title>
     <style></style>
+	<script type = "text/javascript" src="./neural-network.js"></script>
 </head>
 
 <body>
@@ -32,9 +33,13 @@
 		const SHIP_INV_DUR = 3;//duration ship invulnerability seconds
 		const SHIP_THRUST = 5;//acceleration pixels/second
 		const TURN_SPEED = 360;//degrees/second
+
+		//dev flags
+		const AUTOMATION_ON = true;
 		const SHOW_BOUNDING = false;//show or hide collision bounding box
 		const SOUND_ON = true;
 		const MUSIC_ON = true;
+
 		const TEXT_FADE_TIME = 2.5;//text fade time in seconds
 		const TEXT_SIZE = 40;//text font height in pixels
 	
@@ -56,6 +61,32 @@
 		var level, lives, roids, score, scoreHigh, ship, text, textAlpha;
 		newGame();
 		
+		//set up neural net
+		if (AUTOMATION_ON) {
+			// TODO neural network
+			
+			let m0 = new Matrix(2, 3, [
+				[2, 1, -1],
+				[4, 3, 0]
+			]);
+			let m1 = new Matrix(2, 3, [
+				[0, 1, -1],
+				[2, -3, 0]
+			]);
+			let m2 = new Matrix(2, 2, [
+				[1, -1],
+				[3, 0]
+			]);
+			//m0.randomWeights();
+			let arr = [4, 5, 6, 7];
+			//console.log(arr);
+			console.table(Matrix.transpose(m1).data);
+			//console.table(m2.data);
+			console.table(m1.data);
+			//console.table(Matrix.dot(m2, m1).data);
+		}
+		
+		//event handler
 		document.addEventListener("keydown", keyDown);
 		document.addEventListener("keyup", keyUp);
 		
@@ -150,7 +181,7 @@
 		}
 		
 		function keyDown(/** @type {KeyboardEvent}*/ ev ) {
-			if (ship.dead) {
+			if (ship.dead || AUTOMATION_ON) {
 				return;
 			}
 		
@@ -171,7 +202,7 @@
 		}
 		
 		function keyUp(/** @type {KeyboardEvent}*/ ev ) {
-			if (ship.dead) {
+			if (ship.dead || AUTOMATION_ON) {
 				return;
 			}
 		
@@ -331,6 +362,11 @@
 		function update() {
 			var blinkOn = ship.blinkNum % 2 == 0;
 			var exploding = ship.explodeTime > 0;
+			
+			//use the neural network to rotate the ship and shoot
+			if (AUTOMATION_ON) {
+				// TODO control ship
+			}
 			
 			//tick music
 			music.tick();
